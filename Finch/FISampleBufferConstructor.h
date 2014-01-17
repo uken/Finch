@@ -13,6 +13,7 @@
     NSUInteger voices;
     float cacheDuration;
     bool shouldPlay;
+    bool shouldLoop;
 }
-- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play;
+- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play  andShouldLoop:(bool)loop;
 @end

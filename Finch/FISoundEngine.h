@@ -22,7 +22,13 @@
 
 - (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration;
 
+- (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop;
+
+- (void) stopSoundNamed: (NSString *) soundName;
+
 - (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration;
+
+- (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop;
 
 - (void) tidyBuffers;
 
