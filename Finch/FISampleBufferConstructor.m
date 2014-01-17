@@ -12,13 +12,14 @@
 
 @implementation FISampleBufferConstructor
 
-- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play {
+- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play andShouldLoop:(bool)loop {
     
     if (self = [super init]) {
         soundName = aSoundName;
         voices = numVoices;
         cacheDuration = aCacheDuration;
         shouldPlay = play;
+        shouldLoop = loop;
     }
     return self;
 }
@@ -36,7 +37,7 @@
     FISound *sound = [[FISound alloc]
                       initWithPath:fullpath andName:soundName
                       maxPolyphony:voices error:&error];
-    
+    [sound setLoop:shouldLoop];
     sound.cacheDuration = cacheDuration;
     
     @synchronized( [FISoundEngine class] ) {

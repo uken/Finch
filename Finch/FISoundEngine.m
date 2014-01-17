@@ -16,13 +16,13 @@
 - (id) init
 {
     self = [super init];
-
+    
     _soundDevice = [FISoundDevice defaultSoundDevice];
     _soundContext = [FISoundContext contextForDevice:_soundDevice error:NULL];
     if (!_soundContext) {
         return nil;
     }
-
+    
     [self setSoundBundle:[NSBundle bundleForClass:[self class]]];
     [_soundContext setCurrent:YES];
     
@@ -30,7 +30,7 @@
     _soundsCalledToLoad = [NSMutableSet setWithCapacity:1];
     
     _lastTidyTime = 0;
-
+    
     return self;
 }
 
@@ -75,8 +75,11 @@
     [self playSoundNamed:soundName maxPolyphony:voices withCacheDuration:DEFAULT_SOUND_CACHE_DURATION];
 }
 
-- (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration
-{
+- (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration {
+    [self playSoundNamed:soundName maxPolyphony:voices withCacheDuration:DEFAULT_SOUND_CACHE_DURATION shouldLoop:NO];
+}
+
+- (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
     if (!soundName)
         return;
     @synchronized( [FISoundEngine class] ) {
@@ -86,7 +89,7 @@
                 cacheDuration = 0.0;
             [sound setCacheDuration:cacheDuration];
             
-            [sound play];            
+            [sound play];
         }
         else {
             //if we've already made a call to load this sound, don't do it again.
@@ -96,7 +99,7 @@
             [self.soundsCalledToLoad addObject:soundName];
             
             NSOperationQueue *opQueue = [FISoundEngine sharedOperationQueue];
-            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:YES];
+            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:YES andShouldLoop:shouldLoop];
             
             [bufferConstructor setQueuePriority:NSOperationQueuePriorityVeryLow];
             
@@ -105,11 +108,25 @@
         }
         
         [self tidyBuffers];
-     }
+    }
 }
 
-- (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration
-{
+- (void) stopSoundNamed: (NSString *) soundName {
+    if (!soundName)
+        return;
+    @synchronized( [FISoundEngine class] ) {
+        if ([self.sounds objectForKey:soundName]) {
+            FISound * sound = ((FISound*)[self.sounds objectForKey:soundName]);
+            [sound stop];
+        }
+    }
+}
+
+- (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration {
+    [self loadSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration shouldLoop:NO];
+}
+
+- (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
     if (!soundName)
         return;
     @synchronized( [FISoundEngine class] ) {
@@ -127,7 +144,7 @@
             [self.soundsCalledToLoad addObject:soundName];
             
             NSOperationQueue *opQueue = [FISoundEngine sharedOperationQueue];
-            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:NO];
+            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:NO andShouldLoop:shouldLoop];
             
             [bufferConstructor setQueuePriority:NSOperationQueuePriorityVeryLow];
             
@@ -154,7 +171,7 @@
 #pragma mark Sound Management
 
 - (void) tidyBuffers {
-     NSTimeInterval currentTime = [[NSDate date ] timeIntervalSince1970];
+    NSTimeInterval currentTime = [[NSDate date ] timeIntervalSince1970];
     //only tidy memory every so often
     if (self.lastTidyTime < (currentTime - TIDY_SOUND_BUFFERS_INTERVAL)) {
         self.lastTidyTime = currentTime;
@@ -180,7 +197,7 @@
     @synchronized( [FISoundEngine class] ) {
         
         NSTimeInterval currentTime = [[NSDate date ] timeIntervalSince1970];
-
+        
         self.lastTidyTime = currentTime;
         
         NSMutableArray *deadSounds = [NSMutableArray arrayWithCapacity:0];
