@@ -10,10 +10,11 @@
 
 @interface FISampleBufferConstructor : NSOperation {
     NSString * soundName;
+    NSString * soundPath;
     NSUInteger voices;
     float cacheDuration;
     bool shouldPlay;
     bool shouldLoop;
 }
-- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play  andShouldLoop:(bool)loop;
+- (id)initWithSoundNamed:(NSString*)aSoundName withSoundPath:(NSString *)aSoundPath maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play  andShouldLoop:(bool)loop;
 @end

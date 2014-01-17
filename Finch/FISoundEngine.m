@@ -76,10 +76,10 @@
 }
 
 - (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration {
-    [self playSoundNamed:soundName maxPolyphony:voices withCacheDuration:DEFAULT_SOUND_CACHE_DURATION shouldLoop:NO];
+    [self playSoundNamed:soundName withPath:soundName maxPolyphony:voices withCacheDuration:DEFAULT_SOUND_CACHE_DURATION shouldLoop:NO];
 }
 
-- (void) playSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
+- (void) playSoundNamed: (NSString*) soundName withPath: (NSString *) soundPath maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
     if (!soundName)
         return;
     @synchronized( [FISoundEngine class] ) {
@@ -99,7 +99,7 @@
             [self.soundsCalledToLoad addObject:soundName];
             
             NSOperationQueue *opQueue = [FISoundEngine sharedOperationQueue];
-            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:YES andShouldLoop:shouldLoop];
+            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName withSoundPath:soundPath maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:YES andShouldLoop:shouldLoop];
             
             [bufferConstructor setQueuePriority:NSOperationQueuePriorityVeryLow];
             
@@ -123,10 +123,10 @@
 }
 
 - (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration {
-    [self loadSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration shouldLoop:NO];
+    [self loadSoundNamed:soundName withPath:soundName maxPolyphony:voices withCacheDuration:cacheDuration shouldLoop:NO];
 }
 
-- (void) loadSoundNamed: (NSString*) soundName maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
+- (void) loadSoundNamed: (NSString*) soundName withPath: (NSString *) soundPath maxPolyphony: (NSUInteger) voices withCacheDuration: (float)cacheDuration shouldLoop: (BOOL) shouldLoop {
     if (!soundName)
         return;
     @synchronized( [FISoundEngine class] ) {
@@ -144,7 +144,7 @@
             [self.soundsCalledToLoad addObject:soundName];
             
             NSOperationQueue *opQueue = [FISoundEngine sharedOperationQueue];
-            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:NO andShouldLoop:shouldLoop];
+            FISampleBufferConstructor *bufferConstructor = [[FISampleBufferConstructor alloc] initWithSoundNamed:soundName withSoundPath:soundPath maxPolyphony:voices withCacheDuration:cacheDuration andShouldPlay:NO andShouldLoop:shouldLoop];
             
             [bufferConstructor setQueuePriority:NSOperationQueuePriorityVeryLow];
             

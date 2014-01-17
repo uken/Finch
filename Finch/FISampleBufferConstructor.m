@@ -12,10 +12,11 @@
 
 @implementation FISampleBufferConstructor
 
-- (id)initWithSoundNamed:(NSString*)aSoundName maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play andShouldLoop:(bool)loop {
+- (id)initWithSoundNamed:(NSString*)aSoundName withSoundPath:(NSString *)aSoundPath maxPolyphony:(NSUInteger)numVoices withCacheDuration:(float)aCacheDuration andShouldPlay:(bool)play  andShouldLoop:(bool)loop {
     
     if (self = [super init]) {
         soundName = aSoundName;
+        soundPath = aSoundPath;
         voices = numVoices;
         cacheDuration = aCacheDuration;
         shouldPlay = play;
@@ -28,10 +29,10 @@
     NSError* error;
     
     NSString *fullpath;
-    if ( [[NSFileManager defaultManager] fileExistsAtPath:soundName] ) {
-        fullpath = soundName;
+    if ( [[NSFileManager defaultManager] fileExistsAtPath:soundPath] ) {
+        fullpath = soundPath;
     } else {
-        fullpath = [((FISoundEngine *)[FISoundEngine sharedEngine]).soundBundle pathForResource:soundName ofType:nil];
+        fullpath = [((FISoundEngine *)[FISoundEngine sharedEngine]).soundBundle pathForResource:soundPath ofType:nil];
     }
     
     FISound *sound = [[FISound alloc]
@@ -39,6 +40,7 @@
                       maxPolyphony:voices error:&error];
     [sound setLoop:shouldLoop];
     sound.cacheDuration = cacheDuration;
+    sound.lastPlayTime = [[NSDate date ] timeIntervalSince1970];
     
     @synchronized( [FISoundEngine class] ) {
         if (sound) {
